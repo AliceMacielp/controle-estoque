@@ -12,7 +12,7 @@
 const { configure } = require('quasar/wrappers');
 
 
-module.exports = configure(function (/* ctx */) {
+module.exports = configure(function (ctx) {
   return {
     // https://v2.quasar.dev/quasar-cli-vite/prefetch-feature
     // preFetch: true,
@@ -92,6 +92,13 @@ module.exports = configure(function (/* ctx */) {
       // rebuildCache: true, // rebuilds Vite/linter/etc cache on startup
 
        publicPath: '/',
+        // Adicionando a configuração de htmlVariables
+        htmlVariables: {
+          // Configura a meta tag do viewport diretamente
+          viewportMeta: ctx.mode.cordova || ctx.mode.capacitor
+            ? 'user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, viewport-fit=cover'
+            : 'user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width'
+        },
       // analyze: true,
       // env: {},
       // rawDefine: {}
