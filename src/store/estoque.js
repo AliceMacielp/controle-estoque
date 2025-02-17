@@ -1,98 +1,58 @@
-import { openDB } from 'idb';
+import { supabase } from './supabase'; // Caminho corrigido
 
-const DB_NAME = 'estoqueDB';
-const DB_VERSION = 1;
-const DB_STORE_PRODUCTS = 'produtos';
-const DB_STORE_ENTRIES = 'entradas';
-const DB_STORE_SAIDAS = 'saidas';
-const DB_STORE_COMPRAS = 'compras';
-
-let db;
-
-// Função para inicializar o banco de dados
-const initDB = async () => {
-  if (!db) {
-    db = await openDB(DB_NAME, DB_VERSION, {
-      upgrade(db) {
-        if (!db.objectStoreNames.contains(DB_STORE_PRODUCTS)) {
-          db.createObjectStore(DB_STORE_PRODUCTS, { keyPath: 'codigo' });
-        }
-        if (!db.objectStoreNames.contains(DB_STORE_ENTRIES)) {
-          db.createObjectStore(DB_STORE_ENTRIES, { keyPath: 'id', autoIncrement: true });
-        }
-        if (!db.objectStoreNames.contains(DB_STORE_SAIDAS)) {
-          db.createObjectStore(DB_STORE_SAIDAS, { keyPath: 'id', autoIncrement: true });
-        }
-        if (!db.objectStoreNames.contains(DB_STORE_COMPRAS)) {
-          db.createObjectStore(DB_STORE_COMPRAS, { keyPath: 'id', autoIncrement: true });
-        }
-      }
-    });
-  }
-};
-
-// Função para garantir que o banco de dados foi inicializado corretamente
-const ensureDBInitialized = async () => {
-  if (!db) {
-    await initDB();
-  }
-};
-
-// Funções de CRUD
+// Função para adicionar um produto
 const addProduct = async (product) => {
-  await ensureDBInitialized();
-  const tx = db.transaction(DB_STORE_PRODUCTS, 'readwrite');
-  await tx.store.put(product);  // Adiciona ou atualiza o produto
-  await tx.done;
+  const { error } = await supabase.from('produtos').insert([product]);
+  if (error) console.error('Erro ao adicionar produto:', error);
 };
 
+// Função para adicionar uma entrada de estoque
 const addEntry = async (entry) => {
-  await ensureDBInitialized();
-  const tx = db.transaction(DB_STORE_ENTRIES, 'readwrite');
-  await tx.store.add(entry);  // Adiciona a entrada
-  await tx.done;
+  const { error } = await supabase.from('entradas').insert([entry]);
+  if (error) console.error('Erro ao adicionar entrada:', error);
 };
 
+// Função para adicionar uma saída de estoque
 const addExit = async (exit) => {
-  await ensureDBInitialized();
-  const tx = db.transaction(DB_STORE_SAIDAS, 'readwrite');
-  await tx.store.add(exit);  // Adiciona a saída
-  await tx.done;
+  const { error } = await supabase.from('saidas').insert([exit]);
+  if (error) console.error('Erro ao adicionar saída:', error);
 };
 
+// Função para buscar todos os produtos
 const getProducts = async () => {
-  await ensureDBInitialized();
-  const tx = db.transaction(DB_STORE_PRODUCTS, 'readonly');
-  return await tx.store.getAll();  // Recupera todos os produtos
+  const { data, error } = await supabase.from('produtos').select('*');
+  if (error) console.error('Erro ao buscar produtos:', error);
+  return data;
 };
 
+// Função para buscar todas as entradas
 const getEntries = async () => {
-  await ensureDBInitialized();
-  const tx = db.transaction(DB_STORE_ENTRIES, 'readonly');
-  return await tx.store.getAll();  // Recupera todas as entradas
+  const { data, error } = await supabase.from('entradas').select('*');
+  if (error) console.error('Erro ao buscar entradas:', error);
+  return data;
 };
 
+// Função para buscar todas as saídas
 const getExits = async () => {
-  await ensureDBInitialized();
-  const tx = db.transaction(DB_STORE_SAIDAS, 'readonly');
-  return await tx.store.getAll();  // Recupera todas as saídas
+  const { data, error } = await supabase.from('saidas').select('*');
+  if (error) console.error('Erro ao buscar saídas:', error);
+  return data;
 };
 
+// Função para buscar todas as compras
 const getPurchases = async () => {
-  await ensureDBInitialized();
-  const tx = db.transaction(DB_STORE_COMPRAS, 'readonly');
-  return await tx.store.getAll();  // Recupera todas as compras
+  const { data, error } = await supabase.from('compras').select('*');
+  if (error) console.error('Erro ao buscar compras:', error);
+  return data;
 };
 
+// Função para adicionar uma compra
 const addPurchase = async (purchase) => {
-  await ensureDBInitialized();
-  const tx = db.transaction(DB_STORE_COMPRAS, 'readwrite');
-  await tx.store.add(purchase);  // Adiciona a compra
-  await tx.done;
+  const { error } = await supabase.from('compras').insert([purchase]);
+  if (error) console.error('Erro ao adicionar compra:', error);
 };
 
 export {
-  initDB,
   addProduct,
   addEntry,
   addExit,

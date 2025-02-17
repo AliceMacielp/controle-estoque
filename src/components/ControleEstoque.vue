@@ -47,7 +47,7 @@
 </template>
 
 <script>
-import { getProducts, getEntries, getExits, initDB } from 'src/store/estoque';
+import { getProducts, getEntries, getExits } from 'src/store/estoque';
 import { useRouter } from 'vue-router';
 
 export default {
@@ -67,23 +67,28 @@ export default {
   methods: {
     async fetchData() {
       // Garante que o banco de dados foi inicializado antes de buscar os dados
-      await initDB();
 
       const products = await getProducts();
+      console.log('Produtos:', products);
+
       const entries = await getEntries();
       const exits = await getExits();
 
       // Calculando as entradas e saídas corretamente
       this.rows = products.map(product => {
-        const entradas = entries.filter(entry => entry.codigo === product.codigo)
-                                .reduce((sum, entry) => sum + Number(entry.quantidade), 0);
-        
-        const saidas = exits.filter(exit => exit.codigo === product.codigo)
-                            .reduce((sum, exit) => sum + Number(exit.quantidade), 0);
+        // Alterando o filtro para usar codigo_produto
+      const entradas = entries.filter(entry => entry.codigo_produto === product.codigo)
+                              .reduce((sum, entry) => sum + (Number(entry.quantidade) || 0), 0);
 
-        const estoque = entradas - saidas;
-        const nivel = estoque < product.qtdMinima ? 'Baixo' :
-                      estoque >= product.qtdMinima && estoque < product.qtdDesejavel ? 'Médio' : 'Alto';
+      const saidas = exits.filter(exit => exit.codigo_produto === product.codigo)
+                          .reduce((sum, exit) => sum + (Number(exit.quantidade) || 0), 0);
+
+      const estoque = entradas - saidas;
+console.log(`Estoque Mínimo: ${product.estoque_minimo}, Estoque Desejável: ${product.estoque_desejavel}`);
+console.log(`Estoque Calculado: ${estoque}`);
+
+        const nivel = estoque < product.estoque_minimo ? 'Baixo' :
+                      estoque >= product.estoque_minimo && estoque < product.estoque_desejavel ? 'Médio' : 'Alto';
         
         return { ...product, entradas, saidas, estoque, nivel };
       });

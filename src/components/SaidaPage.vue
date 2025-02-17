@@ -4,7 +4,7 @@
       <q-form @submit="submit">
         <div class="q-mb-md">
           <q-input
-            v-model="codigo"
+            v-model="codigo_produto"
             label="Código do Produto"
             @blur="getProduct"
             required
@@ -23,7 +23,7 @@
         </div>
         <div class="q-mb-md">
           <q-input
-            v-model="dataSaida"
+            v-model="data_saida"
             label="Data de Saída"
             type="date"
             required
@@ -55,22 +55,22 @@ import { getProducts, addExit } from 'src/store/estoque';
 export default {
   data() {
     return {
-      codigo: '',
+      codigo_produto: '',
       quantidade: 0,
-      dataSaida: '',
+      data_saida: '',
       product: {}
     };
   },
   methods: {
     async getProduct() {
       const products = await getProducts();
-      this.product = products.find((p) => p.codigo === this.codigo);
+      this.product = products.find((p) => p.codigo === this.codigo_produto);
     },
     async submit() {
       const exit = {
-        codigo: this.codigo,
+        codigo_produto: this.codigo_produto,
         descricao: this.product.descricao,
-        dataSaida: this.dataSaida,
+        data_saida: this.data_saida,
         quantidade: this.quantidade
       };
       await addExit(exit);

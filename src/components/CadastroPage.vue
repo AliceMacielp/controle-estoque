@@ -22,7 +22,7 @@
         </div>
         <div class="q-mb-md">
           <q-input
-            v-model="product.informacoes"
+            v-model="product.info"
             label="Informações Adicionais"
             filled
             :dense="true"
@@ -30,7 +30,7 @@
         </div>
         <div class="q-mb-md">
           <q-input
-            v-model="product.qtdMinima"
+            v-model="product.estoque_minimo"
             label="Quantidade Mínima"
             type="number"
             required
@@ -40,7 +40,7 @@
         </div>
         <div class="q-mb-md">
           <q-input
-            v-model="product.qtdDesejavel"
+            v-model="product.estoque_desejavel"
             label="Quantidade Desejável"
             type="number"
             required
@@ -57,7 +57,7 @@
 </template>
 
 <script>
-import { addProduct, initDB } from 'src/store/estoque';
+import { addProduct } from 'src/store/estoque';
 
 export default {
   data() {
@@ -65,9 +65,9 @@ export default {
       product: {
         codigo: '',
         descricao: '',
-        informacoes: '',
-        qtdMinima: 0,
-        qtdDesejavel: 0
+        info: '',
+        estoque_minimo: 0,
+        estoque_desejavel: 0
       }
     };
   },
@@ -77,13 +77,12 @@ export default {
       const cleanedProduct = {
         codigo: this.product.codigo || '',
         descricao: this.product.descricao || '',
-        informacoes: this.product.informacoes || '',
-        qtdMinima: this.product.qtdMinima || 0,
-        qtdDesejavel: this.product.qtdDesejavel || 0
+        info: this.product.info || '',
+        estoque_minimo: this.product.estoque_minimo || 0,
+        estoque_desejavel: this.product.estoque_desejavel || 0
       };
 
       // Garantir que o DB está inicializado antes de adicionar o produto
-      await initDB();
       await addProduct(cleanedProduct); // Passar o objeto limpo
       this.$router.push('/');
     }
